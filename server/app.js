@@ -11,7 +11,7 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
 app.use('/api/health', healthRoutes);
-app.use('/api/profile', profileRoutes);
+app.use('/api', profileRoutes);
 
 app.use(errorHandler);
 

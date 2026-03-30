@@ -6,6 +6,8 @@ import {
 } from '../services/githubService.js';
 import { getStructuredScores } from '../services/scoringService.js';
 
+const REPORT_TTL_IN_MS = 24 * 60 * 60 * 1000;
+
 const getTopRepos = (repos = []) =>
   [...repos]
     .sort((firstRepo, secondRepo) => {
@@ -43,43 +45,48 @@ const getHeatmapData = (events = []) => {
 
 const buildShareUrl = (username) => `/share/${username}`;
 
+const buildReportPayload = (profile, repos, events) => ({
+  username: profile.login,
+  avatarUrl: profile.avatar_url || '',
+  name: profile.name || '',
+  bio: profile.bio || '',
+  followers: profile.followers || 0,
+  publicRepos: profile.public_repos || 0,
+  scores: getStructuredScores(profile, repos, events),
+  topRepos: getTopRepos(repos),
+  languages: getLanguages(repos),
+  heatmapData: getHeatmapData(events),
+  shareUrl: buildShareUrl(profile.login),
+  cachedAt: new Date(),
+  expiresAt: new Date(Date.now() + REPORT_TTL_IN_MS),
+});
+
+const fetchGitHubData = async (username) => {
+  const [profile, repos, events] = await Promise.all([
+    getUserProfile(username),
+    getUserRepos(username),
+    getUserEvents(username),
+  ]);
+
+  return { profile, repos, events };
+};
+
+const generateAndStoreReport = async (username) => {
+  const { profile, repos, events } = await fetchGitHubData(username);
+  const reportPayload = buildReportPayload(profile, repos, events);
+
+  return Report.findOneAndUpdate({ username: profile.login }, reportPayload, {
+    new: true,
+    upsert: true,
+    runValidators: true,
+    setDefaultsOnInsert: true,
+  });
+};
+
 const getProfileReport = async (req, res, next) => {
   try {
     const { username } = req.params;
-
-    const [profile, repos, events] = await Promise.all([
-      getUserProfile(username),
-      getUserRepos(username),
-      getUserEvents(username),
-    ]);
-
-    const scores = getStructuredScores(profile, repos, events);
-    const reportPayload = {
-      username: profile.login,
-      avatarUrl: profile.avatar_url || '',
-      name: profile.name || '',
-      bio: profile.bio || '',
-      followers: profile.followers || 0,
-      publicRepos: profile.public_repos || 0,
-      scores,
-      topRepos: getTopRepos(repos),
-      languages: getLanguages(repos),
-      heatmapData: getHeatmapData(events),
-      shareUrl: buildShareUrl(profile.login),
-      cachedAt: new Date(),
-      expiresAt: new Date(Date.now() + 24 * 60 * 60 * 1000),
-    };
-
-    const report = await Report.findOneAndUpdate(
-      { username: profile.login },
-      reportPayload,
-      {
-        new: true,
-        upsert: true,
-        runValidators: true,
-        setDefaultsOnInsert: true,
-      }
-    );
+    const report = await generateAndStoreReport(username);
 
     res.status(200).json(report);
   } catch (error) {
@@ -87,4 +94,26 @@ const getProfileReport = async (req, res, next) => {
   }
 };
 
-export { getProfileReport };
+const compareProfiles = async (req, res, next) => {
+  try {
+    const { u1, u2 } = req.query;
+
+    if (!u1 || !u2) {
+      res.status(400);
+      throw new Error('Both u1 and u2 query parameters are required');
+    }
+
+    const [firstReport, secondReport] = await Promise.all([
+      generateAndStoreReport(u1),
+      generateAndStoreReport(u2),
+    ]);
+
+    res.status(200).json({
+      users: [firstReport, secondReport],
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+export { compareProfiles, getProfileReport };

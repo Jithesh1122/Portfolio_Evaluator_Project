@@ -1,8 +1,12 @@
 import { Router } from 'express';
-import { getProfileReport } from '../controllers/profileController.js';
+import {
+  compareProfiles,
+  getProfileReport,
+} from '../controllers/profileController.js';
 
 const router = Router();
 
-router.get('/:username', getProfileReport);
+router.get('/compare', compareProfiles);
+router.get('/profile/:username', getProfileReport);
 
 export default router;
