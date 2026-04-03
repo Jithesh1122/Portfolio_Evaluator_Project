@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
+import ScoreCard from '../components/ScoreCard.jsx';
 import api from '../utils/api.js';
 
 const pageStyle = {
@@ -158,6 +159,8 @@ function Report() {
             </h2>
           </article>
         </section>
+
+        <ScoreCard scores={report?.scores} />
 
         <section style={cardStyle}>
           <h2 style={{ marginTop: 0 }}>Top Repositories</h2>
