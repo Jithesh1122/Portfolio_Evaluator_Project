@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
+import RepoList from '../components/RepoList.jsx';
 import ScoreCard from '../components/ScoreCard.jsx';
 import api from '../utils/api.js';
 
@@ -50,21 +51,6 @@ const statCardStyle = {
   backgroundColor: '#eff6ff',
   borderRadius: '16px',
   padding: '18px',
-};
-
-const repoListStyle = {
-  listStyle: 'none',
-  margin: 0,
-  padding: 0,
-  display: 'grid',
-  gap: '14px',
-};
-
-const repoCardStyle = {
-  border: '1px solid #e2e8f0',
-  borderRadius: '16px',
-  padding: '16px',
-  backgroundColor: '#f8fafc',
 };
 
 function Report() {
@@ -161,27 +147,7 @@ function Report() {
         </section>
 
         <ScoreCard scores={report?.scores} />
-
-        <section style={cardStyle}>
-          <h2 style={{ marginTop: 0 }}>Top Repositories</h2>
-          {report?.topRepos?.length ? (
-            <ul style={repoListStyle}>
-              {report.topRepos.map((repo) => (
-                <li key={repo.name} style={repoCardStyle}>
-                  <h3 style={{ margin: '0 0 8px' }}>{repo.name}</h3>
-                  <p style={{ margin: '0 0 10px', color: '#475569' }}>
-                    {repo.description || 'No description available.'}
-                  </p>
-                  <p style={{ margin: 0, color: '#334155' }}>
-                    {repo.language || 'N/A'} | Stars: {repo.stars} | Forks: {repo.forks}
-                  </p>
-                </li>
-              ))}
-            </ul>
-          ) : (
-            <p style={{ marginBottom: 0 }}>No repositories available.</p>
-          )}
-        </section>
+        <RepoList repos={report?.topRepos} />
       </div>
     </main>
   );
