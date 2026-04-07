@@ -53,11 +53,43 @@ const statCardStyle = {
   padding: '18px',
 };
 
+const shareButtonStyle = {
+  marginTop: '16px',
+  border: 'none',
+  borderRadius: '12px',
+  padding: '12px 18px',
+  backgroundColor: '#2563eb',
+  color: '#ffffff',
+  cursor: 'pointer',
+  fontSize: '0.95rem',
+  fontWeight: 600,
+};
+
+const shareFeedbackStyle = {
+  margin: '12px 0 0',
+  color: '#2563eb',
+  fontSize: '0.95rem',
+};
+
+const upsertMetaTag = (attribute, value, content) => {
+  const selector = `meta[${attribute}="${value}"]`;
+  let element = document.head.querySelector(selector);
+
+  if (!element) {
+    element = document.createElement('meta');
+    element.setAttribute(attribute, value);
+    document.head.appendChild(element);
+  }
+
+  element.setAttribute('content', content);
+};
+
 function Report() {
   const { username } = useParams();
   const [report, setReport] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState('');
+  const [shareMessage, setShareMessage] = useState('');
 
   useEffect(() => {
     const fetchReport = async () => {
@@ -76,6 +108,32 @@ function Report() {
 
     fetchReport();
   }, [username]);
+
+  useEffect(() => {
+    if (!report) {
+      document.title = 'Portfolio Evaluator';
+      return;
+    }
+
+    const displayName = report.name || report.username;
+    const description = `View ${displayName}'s GitHub portfolio report, scores, and repository highlights.`;
+
+    document.title = `${displayName} | Portfolio Evaluator`;
+    upsertMetaTag('name', 'description', description);
+    upsertMetaTag('property', 'og:title', `${displayName} | Portfolio Evaluator`);
+    upsertMetaTag('property', 'og:description', description);
+  }, [report]);
+
+  const handleCopyUrl = async () => {
+    const shareUrl = `${window.location.origin}/report/${username}`;
+
+    try {
+      await navigator.clipboard.writeText(shareUrl);
+      setShareMessage('Report URL copied to clipboard.');
+    } catch (copyError) {
+      setShareMessage('Unable to copy the URL automatically.');
+    }
+  };
 
   if (isLoading) {
     return (
@@ -121,6 +179,10 @@ function Report() {
               <p style={{ margin: 0, color: '#475569', lineHeight: 1.6 }}>
                 {report?.bio || 'No bio available.'}
               </p>
+              <button type="button" style={shareButtonStyle} onClick={handleCopyUrl}>
+                Copy Report URL
+              </button>
+              {shareMessage ? <p style={shareFeedbackStyle}>{shareMessage}</p> : null}
             </div>
           </div>
         </section>
