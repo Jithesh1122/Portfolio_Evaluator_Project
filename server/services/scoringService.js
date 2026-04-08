@@ -1,5 +1,21 @@
 const clampScore = (value) => Math.max(0, Math.min(100, Math.round(value)));
 
+const getLevel = (score) => {
+  if (score >= 80) {
+    return 'Excellent';
+  }
+
+  if (score >= 65) {
+    return 'Strong';
+  }
+
+  if (score >= 45) {
+    return 'Promising';
+  }
+
+  return 'Needs Improvement';
+};
+
 const getDaysSince = (dateValue) => {
   if (!dateValue) {
     return null;
@@ -15,44 +31,116 @@ const getDaysSince = (dateValue) => {
   return (Date.now() - timestamp) / millisecondsPerDay;
 };
 
+const countRecentCommits = (events = []) =>
+  events.reduce((total, event) => {
+    if (event.type !== 'PushEvent') {
+      return total;
+    }
+
+    const daysSinceEvent = getDaysSince(event.created_at);
+
+    if (daysSinceEvent === null || daysSinceEvent > 90) {
+      return total;
+    }
+
+    return total + (event.payload?.commits?.length || 0);
+  }, 0);
+
+const calculateLongestStreak = (events = []) => {
+  const uniqueDays = [...new Set(
+    events
+      .filter((event) => event.type === 'PushEvent')
+      .map((event) => event.created_at?.split('T')[0])
+      .filter(Boolean)
+  )].sort();
+
+  if (!uniqueDays.length) {
+    return 0;
+  }
+
+  let currentStreak = 1;
+  let longestStreak = 1;
+
+  for (let index = 1; index < uniqueDays.length; index += 1) {
+    const previous = new Date(uniqueDays[index - 1]);
+    const current = new Date(uniqueDays[index]);
+    const differenceInDays = Math.round((current - previous) / (1000 * 60 * 60 * 24));
+
+    if (differenceInDays === 1) {
+      currentStreak += 1;
+      longestStreak = Math.max(longestStreak, currentStreak);
+    } else {
+      currentStreak = 1;
+    }
+  }
+
+  return longestStreak;
+};
+
 const calculateActivityScore = (repos = [], events = []) => {
   const pushEvents = events.filter((event) => event.type === 'PushEvent').length;
-  const recentRepos = repos.filter((repo) => {
+  const recentCommits = countRecentCommits(events);
+  const longestStreak = calculateLongestStreak(events);
+  const recentlyUpdatedRepos = repos.filter((repo) => {
     const daysSinceUpdate = getDaysSince(repo.updated_at);
     return daysSinceUpdate !== null && daysSinceUpdate <= 90;
   }).length;
 
-  const score = pushEvents * 5 + recentRepos * 7;
+  const score = recentCommits * 2 + pushEvents * 3 + longestStreak * 4 + recentlyUpdatedRepos * 2;
+  const normalizedScore = clampScore(score);
 
   return {
-    score: clampScore(score),
+    score: normalizedScore,
+    level: getLevel(normalizedScore),
     metrics: {
+      recentCommits,
       pushEvents,
-      recentlyUpdatedRepos: recentRepos,
+      longestStreak,
+      recentlyUpdatedRepos,
     },
   };
 };
 
-const calculateCodeQualityScore = (repos = []) => {
+const calculateCodeQualityScore = (repos = [], repoContentMap = {}) => {
   const nonForkRepos = repos.filter((repo) => !repo.fork);
-  const reposWithDescriptions = nonForkRepos.filter((repo) => repo.description).length;
-  const reposWithTopics = nonForkRepos.filter(
-    (repo) => Array.isArray(repo.topics) && repo.topics.length > 0
-  ).length;
-  const reposWithHomepages = nonForkRepos.filter((repo) => repo.homepage).length;
+  let readmeCount = 0;
+  let licenseCount = 0;
+  let topicsCount = 0;
+  let testsFolderCount = 0;
 
-  const score =
-    reposWithDescriptions * 8 +
-    reposWithTopics * 6 +
-    reposWithHomepages * 6;
+  nonForkRepos.forEach((repo) => {
+    const contents = repoContentMap[repo.name] || [];
+    const contentNames = contents.map((item) => item.name?.toLowerCase()).filter(Boolean);
+
+    if (contentNames.some((name) => name.startsWith('readme'))) {
+      readmeCount += 1;
+    }
+
+    if (repo.license?.key) {
+      licenseCount += 1;
+    }
+
+    if (Array.isArray(repo.topics) && repo.topics.length > 0) {
+      topicsCount += 1;
+    }
+
+    if (contentNames.some((name) => name === 'tests' || name === '__tests__' || name === 'test')) {
+      testsFolderCount += 1;
+    }
+  });
+
+  const score = readmeCount * 7 + licenseCount * 5 + topicsCount * 4 + testsFolderCount * 6;
+  const normalizedScore = clampScore(score);
 
   return {
-    score: clampScore(score),
+    score: normalizedScore,
+    level: getLevel(normalizedScore),
     metrics: {
-      nonForkRepos: nonForkRepos.length,
-      reposWithDescriptions,
-      reposWithTopics,
-      reposWithHomepages,
+      repoCount: nonForkRepos.length,
+      readmeCount,
+      licenseCount,
+      topicsCount,
+      testsFolderCount,
     },
   };
 };
@@ -73,10 +161,12 @@ const calculateDiversityScore = (repos = []) => {
     }
   });
 
-  const score = languages.size * 12 + topics.size * 2;
+  const score = languages.size * 10 + topics.size * 3;
+  const normalizedScore = clampScore(score);
 
   return {
-    score: clampScore(score),
+    score: normalizedScore,
+    level: getLevel(normalizedScore),
     metrics: {
       uniqueLanguages: languages.size,
       uniqueTopics: topics.size,
@@ -84,64 +174,93 @@ const calculateDiversityScore = (repos = []) => {
   };
 };
 
-const calculateCommunityScore = (profile = {}, repos = [], events = []) => {
+const calculateCommunityScore = (profile = {}, repos = [], starredRepos = []) => {
   const followers = profile.followers || 0;
-  const publicRepos = profile.public_repos || 0;
-  const publicGists = profile.public_gists || 0;
-  const watchEvents = events.filter((event) => event.type === 'WatchEvent').length;
-  const forkedRepos = repos.filter((repo) => repo.fork).length;
+  const totalStars = repos.reduce((total, repo) => total + (repo.stargazers_count || 0), 0);
+  const totalForks = repos.reduce((total, repo) => total + (repo.forks_count || 0), 0);
+  const starredCount = starredRepos.length;
 
   const score =
-    followers * 2 +
-    publicRepos * 2 +
-    publicGists * 3 +
-    watchEvents * 4 +
-    forkedRepos * 3;
+    Math.log10(totalStars + 1) * 28 +
+    Math.log10(totalForks + 1) * 22 +
+    Math.min(followers, 100) * 0.5 +
+    Math.min(starredCount, 50) * 0.4;
+
+  const normalizedScore = clampScore(score);
 
   return {
-    score: clampScore(score),
+    score: normalizedScore,
+    level: getLevel(normalizedScore),
     metrics: {
       followers,
-      publicRepos,
-      publicGists,
-      watchEvents,
-      forkedRepos,
+      totalStars,
+      totalForks,
+      starredCount,
     },
   };
 };
 
-const calculateHiringReadiness = (profile = {}, repos = [], events = []) => {
-  const activity = calculateActivityScore(repos, events);
-  const codeQuality = calculateCodeQualityScore(repos);
-  const diversity = calculateDiversityScore(repos);
-  const community = calculateCommunityScore(profile, repos, events);
+const calculateHiringReadiness = (profile = {}, repos = []) => {
+  const hasBio = Boolean(profile.bio);
+  const hasWebsite = Boolean(profile.blog);
+  const hasPublicEmail = Boolean(profile.email);
+  const hasPinnedStyleRepos = repos.filter((repo) => !repo.fork).length >= 4;
 
-  const weightedScore =
-    activity.score * 0.3 +
-    codeQuality.score * 0.3 +
-    diversity.score * 0.2 +
-    community.score * 0.2;
+  const score =
+    (hasBio ? 25 : 0) +
+    (hasWebsite ? 25 : 0) +
+    (hasPublicEmail ? 25 : 0) +
+    (hasPinnedStyleRepos ? 25 : 0);
 
-  let level = 'Needs Improvement';
-
-  if (weightedScore >= 75) {
-    level = 'Strong';
-  } else if (weightedScore >= 50) {
-    level = 'Promising';
-  }
+  const normalizedScore = clampScore(score);
 
   return {
-    score: clampScore(weightedScore),
-    level,
+    score: normalizedScore,
+    level: getLevel(normalizedScore),
+    metrics: {
+      hasBio,
+      hasWebsite,
+      hasPublicEmail,
+      hasPinnedRepos: hasPinnedStyleRepos,
+    },
   };
 };
 
-const getStructuredScores = (profile = {}, repos = [], events = []) => {
+const calculateOverallScore = (scores) => {
+  const weightedScore =
+    scores.activity.score * 0.25 +
+    scores.codeQuality.score * 0.2 +
+    scores.diversity.score * 0.2 +
+    scores.community.score * 0.2 +
+    scores.hiringReadiness.score * 0.15;
+
+  const normalizedScore = clampScore(weightedScore);
+
+  return {
+    score: normalizedScore,
+    level: getLevel(normalizedScore),
+  };
+};
+
+const getStructuredScores = (
+  profile = {},
+  repos = [],
+  events = [],
+  repoContentMap = {},
+  starredRepos = []
+) => {
   const activity = calculateActivityScore(repos, events);
-  const codeQuality = calculateCodeQualityScore(repos);
+  const codeQuality = calculateCodeQualityScore(repos, repoContentMap);
   const diversity = calculateDiversityScore(repos);
-  const community = calculateCommunityScore(profile, repos, events);
-  const hiringReadiness = calculateHiringReadiness(profile, repos, events);
+  const community = calculateCommunityScore(profile, repos, starredRepos);
+  const hiringReadiness = calculateHiringReadiness(profile, repos);
+  const overall = calculateOverallScore({
+    activity,
+    codeQuality,
+    diversity,
+    community,
+    hiringReadiness,
+  });
 
   return {
     activity,
@@ -149,6 +268,7 @@ const getStructuredScores = (profile = {}, repos = [], events = []) => {
     diversity,
     community,
     hiringReadiness,
+    overall,
   };
 };
 

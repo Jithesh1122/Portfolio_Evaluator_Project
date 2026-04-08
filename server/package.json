@@ -5,13 +5,16 @@
   "type": "module",
   "scripts": {
     "dev": "node --watch server.js",
-    "start": "node server.js"
+    "start": "node server.js",
+    "render-build": "npm install",
+    "render-start": "node server.js"
   },
   "dependencies": {
     "@octokit/rest": "^21.1.1",
     "cors": "^2.8.5",
     "dotenv": "^16.4.5",
     "express": "^4.21.1",
-    "mongoose": "^8.8.1"
+    "mongoose": "^8.8.1",
+    "node-cron": "^4.0.7"
   }
 }

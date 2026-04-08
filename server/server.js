@@ -1,6 +1,8 @@
 import dotenv from 'dotenv';
+import cron from 'node-cron';
 import app from './app.js';
 import connectDB from './config/db.js';
+import Report from './models/Report.js';
 
 dotenv.config();
 
@@ -10,8 +12,16 @@ const startServer = async () => {
   try {
     await connectDB(process.env.MONGODB_URI);
 
+    cron.schedule('0 * * * *', async () => {
+      await Report.deleteMany({
+        expiresAt: { $lte: new Date() },
+      });
+    });
+
     app.listen(PORT, () => {
-      console.log(`Server running on port ${PORT}`);
+      if (process.env.NODE_ENV !== 'production') {
+        console.log(`Server running on port ${PORT}`);
+      }
     });
   } catch (error) {
     console.error('Failed to start server:', error.message);

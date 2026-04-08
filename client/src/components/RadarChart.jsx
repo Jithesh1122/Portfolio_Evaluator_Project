@@ -32,27 +32,50 @@ const defaultScores = {
   community: { score: 0 },
 };
 
-function RadarChart({ scores = defaultScores }) {
+function RadarChart({ scores = defaultScores, compareScores, labels = ['Portfolio Scores'] }) {
+  const datasets = [
+    {
+      label: labels[0],
+      data: [
+        scores.activity?.score ?? 0,
+        scores.codeQuality?.score ?? 0,
+        scores.diversity?.score ?? 0,
+        scores.community?.score ?? 0,
+        scores.hiringReadiness?.score ?? 0,
+      ],
+      backgroundColor: 'rgba(37, 99, 235, 0.18)',
+      borderColor: '#2563eb',
+      borderWidth: 2,
+      pointBackgroundColor: '#1d4ed8',
+      pointBorderColor: '#ffffff',
+      pointHoverBackgroundColor: '#ffffff',
+      pointHoverBorderColor: '#1d4ed8',
+    },
+  ];
+
+  if (compareScores) {
+    datasets.push({
+      label: labels[1] || 'Compared Portfolio',
+      data: [
+        compareScores.activity?.score ?? 0,
+        compareScores.codeQuality?.score ?? 0,
+        compareScores.diversity?.score ?? 0,
+        compareScores.community?.score ?? 0,
+        compareScores.hiringReadiness?.score ?? 0,
+      ],
+      backgroundColor: 'rgba(16, 185, 129, 0.16)',
+      borderColor: '#059669',
+      borderWidth: 2,
+      pointBackgroundColor: '#059669',
+      pointBorderColor: '#ffffff',
+      pointHoverBackgroundColor: '#ffffff',
+      pointHoverBorderColor: '#059669',
+    });
+  }
+
   const data = {
-    labels: ['Activity', 'Code Quality', 'Diversity', 'Community'],
-    datasets: [
-      {
-        label: 'Portfolio Scores',
-        data: [
-          scores.activity?.score ?? 0,
-          scores.codeQuality?.score ?? 0,
-          scores.diversity?.score ?? 0,
-          scores.community?.score ?? 0,
-        ],
-        backgroundColor: 'rgba(37, 99, 235, 0.18)',
-        borderColor: '#2563eb',
-        borderWidth: 2,
-        pointBackgroundColor: '#1d4ed8',
-        pointBorderColor: '#ffffff',
-        pointHoverBackgroundColor: '#ffffff',
-        pointHoverBorderColor: '#1d4ed8',
-      },
-    ],
+    labels: ['Activity', 'Code Quality', 'Diversity', 'Community', 'Hiring Readiness'],
+    datasets,
   };
 
   const options = {
@@ -60,7 +83,10 @@ function RadarChart({ scores = defaultScores }) {
     maintainAspectRatio: false,
     plugins: {
       legend: {
-        display: false,
+        display: Boolean(compareScores),
+        labels: {
+          color: '#334155',
+        },
       },
     },
     scales: {

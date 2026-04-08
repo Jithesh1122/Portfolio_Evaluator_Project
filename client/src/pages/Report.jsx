@@ -1,5 +1,8 @@
 import { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
+import HeatMap from '../components/HeatMap.jsx';
+import LanguageChart from '../components/LanguageChart.jsx';
+import RadarChart from '../components/RadarChart.jsx';
 import RepoList from '../components/RepoList.jsx';
 import ScoreCard from '../components/ScoreCard.jsx';
 import api from '../utils/api.js';
@@ -53,6 +56,12 @@ const statCardStyle = {
   padding: '18px',
 };
 
+const chartGridStyle = {
+  display: 'grid',
+  gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))',
+  gap: '24px',
+};
+
 const shareButtonStyle = {
   marginTop: '16px',
   border: 'none',
@@ -100,7 +109,11 @@ function Report() {
         const { data } = await api.get(`/profile/${username}`);
         setReport(data);
       } catch (requestError) {
-        setError('Failed to load report.');
+        setError(
+          requestError.response?.status === 404
+            ? 'GitHub user not found. Please check the username and try again.'
+            : 'Failed to load report. Please try again in a moment.'
+        );
       } finally {
         setIsLoading(false);
       }
@@ -179,6 +192,15 @@ function Report() {
               <p style={{ margin: 0, color: '#475569', lineHeight: 1.6 }}>
                 {report?.bio || 'No bio available.'}
               </p>
+              <p style={{ margin: '10px 0 0', color: '#334155' }}>
+                Joined: {report?.joinDate ? new Date(report.joinDate).toLocaleDateString() : 'N/A'}
+              </p>
+              <p style={{ margin: '6px 0 0', color: '#334155' }}>
+                Website: {report?.websiteUrl || 'Not provided'}
+              </p>
+              <p style={{ margin: '6px 0 0', color: '#334155' }}>
+                Public Email: {report?.publicEmail || 'Not provided'}
+              </p>
               <button type="button" style={shareButtonStyle} onClick={handleCopyUrl}>
                 Copy Report URL
               </button>
@@ -209,6 +231,11 @@ function Report() {
         </section>
 
         <ScoreCard scores={report?.scores} />
+        <div style={chartGridStyle}>
+          <RadarChart scores={report?.scores} />
+          <LanguageChart languages={report?.languages} />
+        </div>
+        <HeatMap heatmapData={report?.heatmapData} />
         <RepoList repos={report?.topRepos} />
       </div>
     </main>

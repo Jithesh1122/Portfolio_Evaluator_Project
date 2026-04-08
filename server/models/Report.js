@@ -38,6 +38,17 @@ const reportSchema = new mongoose.Schema(
       default: '',
       trim: true,
     },
+    joinDate: {
+      type: Date,
+    },
+    websiteUrl: {
+      type: String,
+      default: '',
+    },
+    publicEmail: {
+      type: String,
+      default: '',
+    },
     followers: {
       type: Number,
       default: 0,
@@ -67,13 +78,17 @@ const reportSchema = new mongoose.Schema(
         type: scoreDetailSchema,
         default: () => ({}),
       },
+      overall: {
+        type: scoreDetailSchema,
+        default: () => ({}),
+      },
     },
     topRepos: {
       type: [mongoose.Schema.Types.Mixed],
       default: [],
     },
     languages: {
-      type: [String],
+      type: [mongoose.Schema.Types.Mixed],
       default: [],
     },
     heatmapData: {

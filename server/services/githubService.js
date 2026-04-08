@@ -1,12 +1,15 @@
 import { Octokit } from '@octokit/rest';
 
-const githubToken = process.env.GITHUB_TOKEN;
+const getOctokitClient = () => {
+  const githubToken = process.env.GITHUB_TOKEN;
 
-const octokit = new Octokit({
-  auth: githubToken,
-});
+  return new Octokit({
+    auth: githubToken,
+  });
+};
 
 const getUserProfile = async (username) => {
+  const octokit = getOctokitClient();
   const { data } = await octokit.rest.users.getByUsername({
     username,
   });
@@ -15,6 +18,7 @@ const getUserProfile = async (username) => {
 };
 
 const getUserRepos = async (username) => {
+  const octokit = getOctokitClient();
   const { data } = await octokit.rest.repos.listForUser({
     username,
     per_page: 100,
@@ -25,6 +29,7 @@ const getUserRepos = async (username) => {
 };
 
 const getUserEvents = async (username) => {
+  const octokit = getOctokitClient();
   const { data } = await octokit.rest.activity.listPublicEventsForUser({
     username,
     per_page: 100,
@@ -33,4 +38,49 @@ const getUserEvents = async (username) => {
   return data;
 };
 
-export { getUserProfile, getUserRepos, getUserEvents };
+const getRepoContents = async (owner, repo) => {
+  const octokit = getOctokitClient();
+
+  try {
+    const { data } = await octokit.rest.repos.getContent({
+      owner,
+      repo,
+      path: '',
+    });
+
+    return Array.isArray(data) ? data : [data];
+  } catch (error) {
+    if (error.status === 404 || error.status === 403 || error.status === 429) {
+      return [];
+    }
+
+    throw error;
+  }
+};
+
+const getUserStarredRepos = async (username) => {
+  const octokit = getOctokitClient();
+
+  try {
+    const { data } = await octokit.rest.activity.listReposStarredByUser({
+      username,
+      per_page: 100,
+    });
+
+    return data;
+  } catch (error) {
+    if (error.status === 403 || error.status === 429) {
+      return [];
+    }
+
+    throw error;
+  }
+};
+
+export {
+  getRepoContents,
+  getUserEvents,
+  getUserProfile,
+  getUserRepos,
+  getUserStarredRepos,
+};
