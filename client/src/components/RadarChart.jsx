@@ -18,13 +18,6 @@ ChartJS.register(
   Legend
 );
 
-const cardStyle = {
-  backgroundColor: '#ffffff',
-  borderRadius: '20px',
-  padding: '24px',
-  boxShadow: '0 18px 45px rgba(15, 23, 42, 0.08)',
-};
-
 const defaultScores = {
   activity: { score: 0 },
   codeQuality: { score: 0 },
@@ -43,13 +36,13 @@ function RadarChart({ scores = defaultScores, compareScores, labels = ['Portfoli
         scores.community?.score ?? 0,
         scores.hiringReadiness?.score ?? 0,
       ],
-      backgroundColor: 'rgba(37, 99, 235, 0.18)',
-      borderColor: '#2563eb',
+      backgroundColor: 'rgba(221, 107, 66, 0.16)',
+      borderColor: '#dd6b42',
       borderWidth: 2,
-      pointBackgroundColor: '#1d4ed8',
-      pointBorderColor: '#ffffff',
-      pointHoverBackgroundColor: '#ffffff',
-      pointHoverBorderColor: '#1d4ed8',
+      pointBackgroundColor: '#bb4b25',
+      pointBorderColor: '#fff9f3',
+      pointHoverBackgroundColor: '#fff9f3',
+      pointHoverBorderColor: '#bb4b25',
     },
   ];
 
@@ -81,11 +74,11 @@ function RadarChart({ scores = defaultScores, compareScores, labels = ['Portfoli
   const options = {
     responsive: true,
     maintainAspectRatio: false,
-    plugins: {
-      legend: {
-        display: Boolean(compareScores),
-        labels: {
-          color: '#334155',
+      plugins: {
+        legend: {
+          display: Boolean(compareScores),
+          labels: {
+          color: '#5f6c64',
         },
       },
     },
@@ -96,16 +89,16 @@ function RadarChart({ scores = defaultScores, compareScores, labels = ['Portfoli
         ticks: {
           stepSize: 20,
           backdropColor: 'transparent',
-          color: '#64748b',
+          color: '#7a756f',
         },
         grid: {
-          color: 'rgba(148, 163, 184, 0.35)',
+          color: 'rgba(112, 103, 92, 0.25)',
         },
         angleLines: {
-          color: 'rgba(148, 163, 184, 0.25)',
+          color: 'rgba(112, 103, 92, 0.18)',
         },
         pointLabels: {
-          color: '#0f172a',
+          color: '#16211d',
           font: {
             size: 13,
           },
@@ -115,11 +108,11 @@ function RadarChart({ scores = defaultScores, compareScores, labels = ['Portfoli
   };
 
   return (
-    <section style={cardStyle}>
-      <p style={{ margin: 0, color: '#475569', fontSize: '0.95rem' }}>
+    <section className="panel">
+      <p className="panel__eyebrow">
         Visual Score Snapshot
       </p>
-      <h2 style={{ margin: '6px 0 20px', fontSize: '1.8rem', color: '#0f172a' }}>
+      <h2 className="section-title" style={{ fontSize: '2rem', marginBottom: '20px' }}>
         Radar Analysis
       </h2>
       <div style={{ height: '320px' }}>

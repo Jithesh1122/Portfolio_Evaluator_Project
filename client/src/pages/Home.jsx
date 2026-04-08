@@ -2,35 +2,6 @@ import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import SearchBar from '../components/SearchBar.jsx';
 
-const pageStyle = {
-  minHeight: '100vh',
-  padding: '48px 20px',
-  background: 'linear-gradient(180deg, #eff6ff 0%, #f8fafc 60%, #e2e8f0 100%)',
-  fontFamily: 'Segoe UI, sans-serif',
-  color: '#0f172a',
-};
-
-const containerStyle = {
-  maxWidth: '980px',
-  margin: '0 auto',
-  display: 'grid',
-  gap: '24px',
-};
-
-const heroCardStyle = {
-  backgroundColor: '#ffffff',
-  borderRadius: '24px',
-  padding: '32px',
-  boxShadow: '0 18px 45px rgba(15, 23, 42, 0.08)',
-};
-
-const compareGridStyle = {
-  display: 'grid',
-  gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))',
-  gap: '14px',
-  marginTop: '16px',
-};
-
 function Home() {
   const [userOne, setUserOne] = useState('');
   const [userTwo, setUserTwo] = useState('');
@@ -47,50 +18,80 @@ function Home() {
   };
 
   return (
-    <main style={pageStyle}>
-      <div style={containerStyle}>
-        <section style={heroCardStyle}>
-          <p style={{ margin: 0, color: '#2563eb', fontWeight: 700 }}>Developer Portfolio Evaluator</p>
-          <h1 style={{ margin: '8px 0 12px', fontSize: '2.4rem' }}>
-            Turn any public GitHub profile into a shareable hiring report.
-          </h1>
-          <p style={{ margin: '0 0 24px', color: '#475569', lineHeight: 1.7 }}>
-            Search a developer profile, review the score breakdown, inspect language and
-            activity charts, and compare two candidates side by side.
-          </p>
-          <SearchBar />
+    <main className="app-shell page">
+      <div className="page__container">
+        <section className="hero-panel home-hero fade-in">
+          <div className="home-hero__content">
+            <p className="hero-panel__eyebrow">Developer Portfolio Evaluator</p>
+            <h1 className="hero-panel__title">
+              Turn GitHub work into an <em>interview-ready</em> story.
+            </h1>
+            <p className="hero-panel__text">
+              Search any public GitHub profile, unpack a detailed score breakdown, inspect
+              charts and repository highlights, then share a polished report in seconds.
+            </p>
+            <SearchBar />
+          </div>
+          <div className="home-hero__visual" aria-hidden="true">
+            <div className="home-hero__pattern home-hero__pattern--waves" />
+            <div className="home-hero__pattern home-hero__pattern--dots" />
+            <div className="home-hero__orb home-hero__orb--large" />
+            <div className="home-hero__orb home-hero__orb--small" />
+            <div className="home-hero__stripe home-hero__stripe--one" />
+            <div className="home-hero__stripe home-hero__stripe--two" />
+            <div className="home-hero__badge">
+              <span className="home-hero__badge-line" />
+              <span className="home-hero__badge-line" />
+              <span className="home-hero__badge-line" />
+            </div>
+          </div>
+          <div className="feature-strip">
+            <div className="feature-pill">
+              <strong>Live Profile Reports</strong>
+              <span className="muted">Scores, charts, caching, and share links.</span>
+            </div>
+            <div className="feature-pill">
+              <strong>Visual Evaluation</strong>
+              <span className="muted">Radar, heat map, languages, and top repos.</span>
+            </div>
+            <div className="feature-pill">
+              <strong>Fast Compare Mode</strong>
+              <span className="muted">Put two developers side by side instantly.</span>
+            </div>
+          </div>
         </section>
 
-        <section style={heroCardStyle}>
-          <p style={{ margin: 0, color: '#475569', fontSize: '0.95rem' }}>Bonus Compare Mode</p>
-          <h2 style={{ margin: '6px 0 12px', fontSize: '1.8rem' }}>Compare Two GitHub Users</h2>
-          <form onSubmit={handleCompareSubmit}>
-            <div style={compareGridStyle}>
+        <section className="hero-panel compare-panel fade-in stagger-1">
+          <div className="compare-panel__header">
+            <div>
+              <p className="hero-panel__eyebrow">Bonus Compare Mode</p>
+              <h2 className="section-title compare-panel__title">
+                Compare two profiles <em>side by side</em>
+              </h2>
+            </div>
+            <p className="hero-panel__text compare-panel__text">
+              Use this when you want a side-by-side comparison after exploring a single report.
+            </p>
+          </div>
+          <form onSubmit={handleCompareSubmit} className="compare-form compare-panel__form">
+            <div className="compare-form__grid">
               <input
+                className="input"
                 type="text"
                 value={userOne}
                 onChange={(event) => setUserOne(event.target.value)}
                 placeholder="First username"
-                style={{ padding: '14px 16px', borderRadius: '14px', border: '1px solid #cbd5e1' }}
               />
               <input
+                className="input"
                 type="text"
                 value={userTwo}
                 onChange={(event) => setUserTwo(event.target.value)}
                 placeholder="Second username"
-                style={{ padding: '14px 16px', borderRadius: '14px', border: '1px solid #cbd5e1' }}
               />
               <button
                 type="submit"
-                style={{
-                  border: 'none',
-                  borderRadius: '14px',
-                  backgroundColor: '#0f172a',
-                  color: '#ffffff',
-                  padding: '14px 18px',
-                  fontWeight: 700,
-                  cursor: 'pointer',
-                }}
+                className="button-ghost compare-form__button compare-panel__button"
               >
                 Compare Profiles
               </button>

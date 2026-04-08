@@ -1,49 +1,3 @@
-const wrapperStyle = {
-  backgroundColor: '#ffffff',
-  borderRadius: '20px',
-  padding: '24px',
-  boxShadow: '0 18px 45px rgba(15, 23, 42, 0.08)',
-  display: 'grid',
-  gap: '20px',
-};
-
-const headerStyle = {
-  display: 'flex',
-  flexWrap: 'wrap',
-  gap: '24px',
-  alignItems: 'flex-start',
-};
-
-const ringWrapperStyle = {
-  position: 'relative',
-  width: '140px',
-  height: '140px',
-  display: 'grid',
-  placeItems: 'center',
-};
-
-const ringLabelStyle = {
-  position: 'absolute',
-  textAlign: 'center',
-  color: '#0f172a',
-};
-
-const contentStyle = {
-  flex: '1 1 260px',
-};
-
-const scoreGridStyle = {
-  display: 'grid',
-  gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))',
-  gap: '14px',
-};
-
-const scoreItemStyle = {
-  backgroundColor: '#eff6ff',
-  borderRadius: '16px',
-  padding: '16px',
-};
-
 const formatLabel = (label) =>
   label
     .replace(/([A-Z])/g, ' $1')
@@ -66,9 +20,9 @@ function ScoreCard({ scores = {} }) {
   ];
 
   return (
-    <section style={wrapperStyle}>
-      <div style={headerStyle}>
-        <div style={ringWrapperStyle}>
+    <section className="panel">
+      <div style={{ display: 'flex', flexWrap: 'wrap', gap: '24px', alignItems: 'flex-start' }}>
+        <div style={{ position: 'relative', width: '140px', height: '140px', display: 'grid', placeItems: 'center' }}>
           <svg width="140" height="140" viewBox="0 0 140 140">
             <circle
               cx="70"
@@ -91,32 +45,34 @@ function ScoreCard({ scores = {} }) {
               transform="rotate(-90 70 70)"
             />
           </svg>
-          <div style={ringLabelStyle}>
+          <div style={{ position: 'absolute', textAlign: 'center', color: 'var(--text)' }}>
             <p style={{ margin: 0, fontSize: '0.85rem', color: '#64748b' }}>Overall</p>
             <h3 style={{ margin: '6px 0 2px', fontSize: '2rem' }}>{overallScore}</h3>
-            <p style={{ margin: 0, fontSize: '0.9rem', color: '#2563eb' }}>{overallLevel}</p>
+            <p style={{ margin: 0, fontSize: '0.9rem', color: 'var(--accent-deep)' }}>{overallLevel}</p>
           </div>
         </div>
-        <div style={contentStyle}>
-          <p style={{ margin: 0, color: '#475569', fontSize: '0.95rem' }}>
+        <div style={{ flex: '1 1 260px' }}>
+          <p className="panel__eyebrow" style={{ marginBottom: '8px' }}>
             Portfolio Score Summary
           </p>
-          <h2 style={{ margin: '6px 0 8px', fontSize: '1.8rem' }}>Score Breakdown</h2>
-          <p style={{ margin: 0, color: '#64748b', lineHeight: 1.6 }}>
+          <h2 className="section-title" style={{ fontSize: '2.4rem', marginTop: 0 }}>
+            Score Breakdown
+          </h2>
+          <p className="panel__text" style={{ margin: 0 }}>
             A weighted portfolio score built from GitHub activity, code quality, diversity,
             community impact, and hiring readiness signals.
           </p>
         </div>
       </div>
 
-      <div style={scoreGridStyle}>
+      <div className="stats-grid" style={{ marginTop: '20px' }}>
         {categories.map(({ key, label }) => (
-          <article key={key} style={scoreItemStyle}>
-            <p style={{ margin: 0, color: '#475569' }}>{label}</p>
-            <h3 style={{ margin: '8px 0 0', fontSize: '1.6rem', color: '#0f172a' }}>
+          <article key={key} className="metric-card">
+            <p className="metric-card__label">{label}</p>
+            <h3 className="metric-card__value" style={{ fontSize: '1.8rem' }}>
               {scores[key]?.score ?? 0}
             </h3>
-            <p style={{ margin: '6px 0 0', color: '#64748b', fontSize: '0.9rem' }}>
+            <p className="muted" style={{ margin: '8px 0 0', fontSize: '0.88rem' }}>
               {scores[key]?.level || `${formatLabel(key)} score`}
             </p>
           </article>

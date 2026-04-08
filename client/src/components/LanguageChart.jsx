@@ -10,13 +10,6 @@ import { Bar } from 'react-chartjs-2';
 
 ChartJS.register(CategoryScale, LinearScale, BarElement, Tooltip, Legend);
 
-const cardStyle = {
-  backgroundColor: '#ffffff',
-  borderRadius: '20px',
-  padding: '24px',
-  boxShadow: '0 18px 45px rgba(15, 23, 42, 0.08)',
-};
-
 function LanguageChart({ languages = [] }) {
   const chartLanguages = languages.slice(0, 6);
 
@@ -26,7 +19,7 @@ function LanguageChart({ languages = [] }) {
       {
         label: 'Language Usage %',
         data: chartLanguages.map((item) => item.percent),
-        backgroundColor: ['#1d4ed8', '#2563eb', '#3b82f6', '#60a5fa', '#93c5fd', '#bfdbfe'],
+        backgroundColor: ['#dd6b42', '#e79167', '#efb089', '#6f8f78', '#8eac95', '#cbd8c8'],
         borderRadius: 12,
       },
     ],
@@ -43,7 +36,7 @@ function LanguageChart({ languages = [] }) {
     scales: {
       x: {
         ticks: {
-          color: '#334155',
+          color: '#4c5d54',
         },
         grid: {
           display: false,
@@ -54,21 +47,21 @@ function LanguageChart({ languages = [] }) {
         max: 100,
         ticks: {
           callback: (value) => `${value}%`,
-          color: '#64748b',
+          color: '#6a665f',
         },
         grid: {
-          color: 'rgba(148, 163, 184, 0.2)',
+          color: 'rgba(112, 103, 92, 0.18)',
         },
       },
     },
   };
 
   return (
-    <section style={cardStyle}>
-      <p style={{ margin: 0, color: '#475569', fontSize: '0.95rem' }}>
+    <section className="panel">
+      <p className="panel__eyebrow">
         Language Mix
       </p>
-      <h2 style={{ margin: '6px 0 20px', fontSize: '1.8rem', color: '#0f172a' }}>
+      <h2 className="section-title" style={{ fontSize: '2rem', marginBottom: '20px' }}>
         Language Distribution
       </h2>
       <div style={{ height: '300px' }}>

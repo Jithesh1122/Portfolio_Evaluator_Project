@@ -3,34 +3,6 @@ import { useSearchParams } from 'react-router-dom';
 import RadarChart from '../components/RadarChart.jsx';
 import api from '../utils/api.js';
 
-const pageStyle = {
-  minHeight: '100vh',
-  padding: '40px 20px',
-  background: 'linear-gradient(180deg, #f8fafc 0%, #e2e8f0 100%)',
-  color: '#0f172a',
-  fontFamily: 'Segoe UI, sans-serif',
-};
-
-const containerStyle = {
-  maxWidth: '1000px',
-  margin: '0 auto',
-  display: 'grid',
-  gap: '24px',
-};
-
-const cardStyle = {
-  backgroundColor: '#ffffff',
-  borderRadius: '20px',
-  padding: '24px',
-  boxShadow: '0 18px 45px rgba(15, 23, 42, 0.08)',
-};
-
-const comparisonGridStyle = {
-  display: 'grid',
-  gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))',
-  gap: '20px',
-};
-
 const categories = [
   { key: 'activity', label: 'Activity' },
   { key: 'codeQuality', label: 'Code Quality' },
@@ -91,9 +63,9 @@ function Compare() {
 
   if (isLoading) {
     return (
-      <main style={pageStyle}>
-        <div style={containerStyle}>
-          <section style={cardStyle}>Loading comparison...</section>
+      <main className="app-shell page">
+        <div className="page__container">
+          <section className="loading-panel">Loading comparison...</section>
         </div>
       </main>
     );
@@ -101,9 +73,9 @@ function Compare() {
 
   if (error) {
     return (
-      <main style={pageStyle}>
-        <div style={containerStyle}>
-          <section style={cardStyle}>{error}</section>
+      <main className="app-shell page">
+        <div className="page__container">
+          <section className="error-panel">{error}</section>
         </div>
       </main>
     );
@@ -112,13 +84,17 @@ function Compare() {
   const [firstReport, secondReport] = compareData;
 
   return (
-    <main style={pageStyle}>
-      <div style={containerStyle}>
-        <section style={cardStyle}>
-          <p style={{ margin: 0, color: '#475569', fontSize: '0.95rem' }}>Compare Mode</p>
-          <h1 style={{ margin: '6px 0 20px', fontSize: '2rem' }}>
+    <main className="app-shell page">
+      <div className="page__container">
+        <section className="panel fade-in">
+          <p className="panel__eyebrow">Compare Mode</p>
+          <h1 className="panel__title">
             {firstReport.username} vs {secondReport.username}
           </h1>
+          <p className="panel__text" style={{ marginTop: 0 }}>
+            Compare score patterns across activity, code quality, diversity, community impact,
+            and hiring readiness.
+          </p>
           <RadarChart
             scores={firstReport.scores}
             compareScores={secondReport.scores}
@@ -126,21 +102,25 @@ function Compare() {
           />
         </section>
 
-        <section style={comparisonGridStyle}>
+        <section className="compare-grid fade-in stagger-1">
           {[firstReport, secondReport].map((report) => (
-            <article key={report.username} style={cardStyle}>
-              <h2 style={{ marginTop: 0 }}>{report.name || report.username}</h2>
-              <p style={{ margin: '0 0 12px', color: '#475569' }}>{report.bio || 'No bio available.'}</p>
-              <p style={{ margin: 0, color: '#334155' }}>
+            <article key={report.username} className="panel compare-summary">
+              <p className="panel__eyebrow">Candidate Snapshot</p>
+              <h2 className="section-title" style={{ fontSize: '2rem', marginBottom: '6px' }}>
+                {report.name || report.username}
+              </h2>
+              <p className="panel__text" style={{ margin: 0 }}>{report.bio || 'No bio available.'}</p>
+              <p className="compare-summary__score">
                 Overall Score: {report.scores?.overall?.score ?? 0}
               </p>
             </article>
           ))}
         </section>
 
-        <section style={cardStyle}>
-          <h2 style={{ marginTop: 0 }}>Category Winners</h2>
-          <div style={comparisonGridStyle}>
+        <section className="panel fade-in stagger-2">
+          <p className="panel__eyebrow">Winner Snapshot</p>
+          <h2 className="section-title" style={{ fontSize: '2.2rem' }}>Category Winners</h2>
+          <div className="winner-grid">
             {categories.map((category) => {
               const firstScore = firstReport.scores?.[category.key]?.score ?? 0;
               const secondScore = secondReport.scores?.[category.key]?.score ?? 0;
@@ -154,14 +134,12 @@ function Compare() {
               return (
                 <article
                   key={category.key}
-                  style={{
-                    ...cardStyle,
-                    backgroundColor: winner === 'Tie' ? '#ffffff' : '#ecfdf5',
-                    border: winner === 'Tie' ? '1px solid #e2e8f0' : '1px solid #86efac',
-                  }}
+                  className={`winner-card ${winner === 'Tie' ? 'winner-card--tie' : 'winner-card--lead'}`}
                 >
-                  <p style={{ margin: 0, color: '#475569' }}>{category.label}</p>
-                  <h3 style={{ margin: '8px 0 0' }}>{winner}</h3>
+                  <p className="metric-card__label">{category.label}</p>
+                  <h3 className="section-title" style={{ fontSize: '1.6rem', marginBottom: 0 }}>
+                    {winner}
+                  </h3>
                 </article>
               );
             })}

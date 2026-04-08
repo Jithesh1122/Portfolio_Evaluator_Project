@@ -7,79 +7,6 @@ import RepoList from '../components/RepoList.jsx';
 import ScoreCard from '../components/ScoreCard.jsx';
 import api from '../utils/api.js';
 
-const pageStyle = {
-  minHeight: '100vh',
-  padding: '40px 20px',
-  background: 'linear-gradient(180deg, #f8fafc 0%, #e2e8f0 100%)',
-  color: '#0f172a',
-  fontFamily: 'Segoe UI, sans-serif',
-};
-
-const containerStyle = {
-  maxWidth: '900px',
-  margin: '0 auto',
-  display: 'grid',
-  gap: '24px',
-};
-
-const cardStyle = {
-  backgroundColor: '#ffffff',
-  borderRadius: '20px',
-  padding: '24px',
-  boxShadow: '0 18px 45px rgba(15, 23, 42, 0.08)',
-};
-
-const profileHeaderStyle = {
-  display: 'flex',
-  flexWrap: 'wrap',
-  alignItems: 'center',
-  gap: '20px',
-};
-
-const avatarStyle = {
-  width: '110px',
-  height: '110px',
-  borderRadius: '50%',
-  objectFit: 'cover',
-  border: '4px solid #dbeafe',
-};
-
-const statGridStyle = {
-  display: 'grid',
-  gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))',
-  gap: '16px',
-};
-
-const statCardStyle = {
-  backgroundColor: '#eff6ff',
-  borderRadius: '16px',
-  padding: '18px',
-};
-
-const chartGridStyle = {
-  display: 'grid',
-  gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))',
-  gap: '24px',
-};
-
-const shareButtonStyle = {
-  marginTop: '16px',
-  border: 'none',
-  borderRadius: '12px',
-  padding: '12px 18px',
-  backgroundColor: '#2563eb',
-  color: '#ffffff',
-  cursor: 'pointer',
-  fontSize: '0.95rem',
-  fontWeight: 600,
-};
-
-const shareFeedbackStyle = {
-  margin: '12px 0 0',
-  color: '#2563eb',
-  fontSize: '0.95rem',
-};
-
 const upsertMetaTag = (attribute, value, content) => {
   const selector = `meta[${attribute}="${value}"]`;
   let element = document.head.querySelector(selector);
@@ -150,9 +77,9 @@ function Report() {
 
   if (isLoading) {
     return (
-      <main style={pageStyle}>
-        <div style={containerStyle}>
-          <section style={cardStyle}>
+      <main className="app-shell page">
+        <div className="page__container">
+          <section className="loading-panel">
             <p>Loading report...</p>
           </section>
         </div>
@@ -162,9 +89,9 @@ function Report() {
 
   if (error) {
     return (
-      <main style={pageStyle}>
-        <div style={containerStyle}>
-          <section style={cardStyle}>
+      <main className="app-shell page">
+        <div className="page__container">
+          <section className="error-panel">
             <p>{error}</p>
           </section>
         </div>
@@ -173,70 +100,70 @@ function Report() {
   }
 
   return (
-    <main style={pageStyle}>
-      <div style={containerStyle}>
-        <section style={cardStyle}>
-          <div style={profileHeaderStyle}>
-            <img
-              src={report?.avatarUrl}
-              alt={report?.name || report?.username}
-              style={avatarStyle}
-            />
+    <main className="app-shell page">
+      <div className="page__container report-grid">
+        <section className="panel fade-in">
+          <div className="profile-hero">
+            <div className="avatar-frame">
+              <img
+                src={report?.avatarUrl}
+                alt={report?.name || report?.username}
+                className="avatar"
+              />
+            </div>
             <div>
-              <p style={{ margin: 0, color: '#475569', fontSize: '0.95rem' }}>
-                GitHub Profile Report
-              </p>
-              <h1 style={{ margin: '6px 0 10px', fontSize: '2rem' }}>
+              <p className="profile-badge">GitHub Profile Report</p>
+              <h1 className="panel__title" style={{ marginBottom: '10px' }}>
                 {report?.name || report?.username}
               </h1>
-              <p style={{ margin: 0, color: '#475569', lineHeight: 1.6 }}>
+              <p className="panel__text" style={{ margin: 0 }}>
                 {report?.bio || 'No bio available.'}
               </p>
-              <p style={{ margin: '10px 0 0', color: '#334155' }}>
-                Joined: {report?.joinDate ? new Date(report.joinDate).toLocaleDateString() : 'N/A'}
-              </p>
-              <p style={{ margin: '6px 0 0', color: '#334155' }}>
-                Website: {report?.websiteUrl || 'Not provided'}
-              </p>
-              <p style={{ margin: '6px 0 0', color: '#334155' }}>
-                Public Email: {report?.publicEmail || 'Not provided'}
-              </p>
-              <button type="button" style={shareButtonStyle} onClick={handleCopyUrl}>
+              <div className="profile-meta">
+                <span>Joined {report?.joinDate ? new Date(report.joinDate).toLocaleDateString() : 'N/A'}</span>
+                <span>Website {report?.websiteUrl || 'Not provided'}</span>
+                <span>Email {report?.publicEmail || 'Not provided'}</span>
+              </div>
+              <button type="button" className="button-dark" style={{ marginTop: '18px' }} onClick={handleCopyUrl}>
                 Copy Report URL
               </button>
-              {shareMessage ? <p style={shareFeedbackStyle}>{shareMessage}</p> : null}
+              {shareMessage ? <p className="feedback-success" style={{ marginTop: '10px' }}>{shareMessage}</p> : null}
             </div>
           </div>
         </section>
 
-        <section style={statGridStyle}>
-          <article style={statCardStyle}>
-            <p style={{ margin: 0, color: '#475569' }}>Username</p>
-            <h2 style={{ margin: '8px 0 0', fontSize: '1.4rem' }}>
-              {report?.username}
-            </h2>
+        <section className="stats-grid fade-in stagger-1">
+          <article className="metric-card">
+            <p className="metric-card__label">Username</p>
+            <h2 className="metric-card__value">{report?.username}</h2>
           </article>
-          <article style={statCardStyle}>
-            <p style={{ margin: 0, color: '#475569' }}>Followers</p>
-            <h2 style={{ margin: '8px 0 0', fontSize: '1.4rem' }}>
-              {report?.followers ?? 0}
-            </h2>
+          <article className="metric-card">
+            <p className="metric-card__label">Followers</p>
+            <h2 className="metric-card__value">{report?.followers ?? 0}</h2>
           </article>
-          <article style={statCardStyle}>
-            <p style={{ margin: 0, color: '#475569' }}>Repositories</p>
-            <h2 style={{ margin: '8px 0 0', fontSize: '1.4rem' }}>
-              {report?.publicRepos ?? 0}
-            </h2>
+          <article className="metric-card">
+            <p className="metric-card__label">Repositories</p>
+            <h2 className="metric-card__value">{report?.publicRepos ?? 0}</h2>
+          </article>
+          <article className="metric-card">
+            <p className="metric-card__label">Shareable Link</p>
+            <h2 className="metric-card__value">{report?.shareUrl ? 'Ready' : 'Pending'}</h2>
           </article>
         </section>
 
-        <ScoreCard scores={report?.scores} />
-        <div style={chartGridStyle}>
+        <div className="fade-in stagger-2">
+          <ScoreCard scores={report?.scores} />
+        </div>
+        <div className="chart-grid fade-in stagger-2">
           <RadarChart scores={report?.scores} />
           <LanguageChart languages={report?.languages} />
         </div>
-        <HeatMap heatmapData={report?.heatmapData} />
-        <RepoList repos={report?.topRepos} />
+        <div className="fade-in stagger-3">
+          <HeatMap heatmapData={report?.heatmapData} />
+        </div>
+        <div className="fade-in stagger-3">
+          <RepoList repos={report?.topRepos} />
+        </div>
       </div>
     </main>
   );

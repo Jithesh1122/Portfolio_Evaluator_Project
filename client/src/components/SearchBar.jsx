@@ -4,7 +4,7 @@ import { useNavigate } from 'react-router-dom';
 function SearchBar() {
   const [username, setUsername] = useState('');
   const [isLoading, setIsLoading] = useState(false);
-const [error, setError] = useState('');
+  const [error, setError] = useState('');
   const navigate = useNavigate();
 
   const handleSubmit = (event) => {
@@ -23,34 +23,26 @@ const [error, setError] = useState('');
   };
 
   return (
-    <form onSubmit={handleSubmit} style={{ display: 'grid', gap: '12px' }}>
-      <label htmlFor="github-username" style={{ fontWeight: 600 }}>GitHub Username</label>
+    <form onSubmit={handleSubmit} className="search-form">
+      <label htmlFor="github-username" className="label">GitHub Username</label>
       <input
+        className="input"
         id="github-username"
         type="text"
         value={username}
         onChange={(event) => setUsername(event.target.value)}
         placeholder="Enter GitHub username"
         disabled={isLoading}
-        style={{ padding: '14px 16px', borderRadius: '14px', border: '1px solid #cbd5e1' }}
       />
       <button
         type="submit"
         disabled={isLoading}
-        style={{
-          width: 'fit-content',
-          border: 'none',
-          borderRadius: '14px',
-          padding: '12px 18px',
-          backgroundColor: '#2563eb',
-          color: '#ffffff',
-          fontWeight: 700,
-          cursor: 'pointer',
-        }}
+        className="button"
+        style={{ width: 'fit-content' }}
       >
         {isLoading ? 'Loading...' : 'View Report'}
       </button>
-      {error ? <p style={{ margin: 0, color: '#dc2626' }}>{error}</p> : null}
+      {error ? <p className="feedback-error">{error}</p> : null}
     </form>
   );
 }

@@ -17,13 +17,6 @@ ChartJS.register(
   MatrixElement
 );
 
-const cardStyle = {
-  backgroundColor: '#ffffff',
-  borderRadius: '20px',
-  padding: '24px',
-  boxShadow: '0 18px 45px rgba(15, 23, 42, 0.08)',
-};
-
 const dayLabels = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
 
 const getFormattedHeatmapData = (heatmapData = []) => {
@@ -72,22 +65,22 @@ function HeatMap({ heatmapData = [] }) {
           const value = context.dataset.data[context.dataIndex]?.v ?? 0;
 
           if (value >= 6) {
-            return '#1d4ed8';
+            return '#bb4b25';
           }
 
           if (value >= 3) {
-            return '#60a5fa';
+            return '#dd8a64';
           }
 
           if (value >= 1) {
-            return '#bfdbfe';
+            return '#f0c3ae';
           }
 
-          return '#e2e8f0';
+          return '#ece1d3';
         },
         borderRadius: 6,
         borderWidth: 1,
-        borderColor: '#ffffff',
+        borderColor: '#fff8ef',
         width: ({ chart }) => (chart.chartArea ? chart.chartArea.width / 12 - 6 : 20),
         height: ({ chart }) => (chart.chartArea ? chart.chartArea.height / 7 - 6 : 20),
       },
@@ -138,7 +131,7 @@ function HeatMap({ heatmapData = [] }) {
         reverse: true,
         ticks: {
           callback: (value) => dayLabels[value] || '',
-          color: '#64748b',
+          color: '#6a665f',
         },
         grid: {
           display: false,
@@ -151,11 +144,11 @@ function HeatMap({ heatmapData = [] }) {
   };
 
   return (
-    <section style={cardStyle}>
-      <p style={{ margin: 0, color: '#475569', fontSize: '0.95rem' }}>
+    <section className="panel">
+      <p className="panel__eyebrow">
         Activity Pattern
       </p>
-      <h2 style={{ margin: '6px 0 20px', fontSize: '1.8rem', color: '#0f172a' }}>
+      <h2 className="section-title" style={{ fontSize: '2rem', marginBottom: '20px' }}>
         Heat Map
       </h2>
       <div style={{ height: '240px' }}>
