@@ -52,6 +52,7 @@ const getFormattedHeatmapData = (heatmapData = []) => {
         x: 11 - weekIndex,
         y: dayIndex,
         v: countsByDate.get(dateKey) || 0,
+        date: dateKey,
       });
     }
   }
@@ -102,7 +103,15 @@ function HeatMap({ heatmapData = [] }) {
       },
       tooltip: {
         callbacks: {
-          title: () => 'Activity Count',
+          title: (items) => {
+            const dateValue = items[0]?.raw?.date;
+
+            if (!dateValue) {
+              return 'Activity Details';
+            }
+
+            return new Date(dateValue).toLocaleDateString();
+          },
           label: (context) => `Commits/Events: ${context.raw.v}`,
         },
       },
