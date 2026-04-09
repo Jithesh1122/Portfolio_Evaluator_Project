@@ -25,23 +25,27 @@ function SearchBar() {
   return (
     <form onSubmit={handleSubmit} className="search-form">
       <label htmlFor="github-username" className="label">GitHub Username</label>
-      <input
-        className="input"
-        id="github-username"
-        type="text"
-        value={username}
-        onChange={(event) => setUsername(event.target.value)}
-        placeholder="Enter GitHub username"
-        disabled={isLoading}
-      />
-      <button
-        type="submit"
-        disabled={isLoading}
-        className="button"
-        style={{ width: 'fit-content' }}
-      >
-        {isLoading ? 'Loading...' : 'View Report'}
-      </button>
+      <div className="search-form__row">
+        <input
+          className="input search-form__input"
+          id="github-username"
+          type="text"
+          value={username}
+          onChange={(event) => setUsername(event.target.value)}
+          placeholder="Enter GitHub username"
+          disabled={isLoading}
+        />
+        <button
+          type="submit"
+          disabled={isLoading}
+          className="button search-form__button"
+        >
+          {isLoading ? 'Loading...' : 'View Report'}
+        </button>
+      </div>
+      <p className="search-form__hint">
+        Try `octocat`, your own username, or any public GitHub profile.
+      </p>
       {error ? <p className="feedback-error">{error}</p> : null}
     </form>
   );

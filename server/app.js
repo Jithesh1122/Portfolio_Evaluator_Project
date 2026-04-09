@@ -6,10 +6,18 @@ import errorHandler from './middleware/errorHandler.js';
 
 const app = express();
 
-const allowedOrigins = (process.env.CLIENT_URL || 'http://localhost:5173')
-  .split(',')
-  .map((origin) => origin.trim())
-  .filter(Boolean);
+const allowedOrigins = [
+  ...new Set(
+    [
+      ...(process.env.CLIENT_URL || '').split(','),
+      ...(process.env.NODE_ENV !== 'production'
+        ? ['http://localhost:5173', 'http://127.0.0.1:5173', 'http://localhost:4173']
+        : []),
+    ]
+      .map((origin) => origin.trim())
+      .filter(Boolean)
+  ),
+];
 
 app.use(
   cors({
@@ -21,6 +29,8 @@ app.use(
 
       callback(new Error('CORS origin not allowed'));
     },
+    methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
+    optionsSuccessStatus: 200,
   })
 );
 app.use(express.json());

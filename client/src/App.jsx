@@ -5,12 +5,14 @@ import Compare from './pages/Compare.jsx';
 import Home from './pages/Home.jsx';
 import Report from './pages/Report.jsx';
 
+const THEME_STORAGE_KEY = 'portfolio-theme-v2';
+
 function App() {
-  const [theme, setTheme] = useState(() => localStorage.getItem('portfolio-theme') || 'light');
+  const [theme, setTheme] = useState(() => localStorage.getItem(THEME_STORAGE_KEY) || 'dark');
 
   useEffect(() => {
     document.body.dataset.theme = theme;
-    localStorage.setItem('portfolio-theme', theme);
+    localStorage.setItem(THEME_STORAGE_KEY, theme);
   }, [theme]);
 
   const toggleTheme = () => {

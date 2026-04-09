@@ -65,7 +65,25 @@ function Compare() {
     return (
       <main className="app-shell page">
         <div className="page__container">
-          <section className="loading-panel">Loading comparison...</section>
+          <section className="loading-panel loading-panel--compare">
+            <div className="loading-panel__visual" aria-hidden="true">
+              <span className="loading-panel__orb loading-panel__orb--one" />
+              <span className="loading-panel__orb loading-panel__orb--two" />
+              <span className="loading-panel__ring" />
+            </div>
+            <div className="loading-panel__copy">
+              <p className="loading-panel__eyebrow">Preparing Compare View</p>
+              <h2 className="loading-panel__title">Loading comparison...</h2>
+              <p className="loading-panel__text">
+                Syncing both profiles, category scores, and the shared radar view.
+              </p>
+            </div>
+            <div className="loading-panel__bars" aria-hidden="true">
+              <span className="loading-panel__bar loading-panel__bar--long" />
+              <span className="loading-panel__bar loading-panel__bar--medium" />
+              <span className="loading-panel__bar loading-panel__bar--short" />
+            </div>
+          </section>
         </div>
       </main>
     );

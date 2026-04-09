@@ -6,8 +6,12 @@
   "scripts": {
     "dev": "node --watch server.js",
     "start": "node server.js",
+    "prod": "node server.js",
     "render-build": "npm install",
     "render-start": "node server.js"
+  },
+  "engines": {
+    "node": ">=18"
   },
   "dependencies": {
     "@octokit/rest": "^21.1.1",

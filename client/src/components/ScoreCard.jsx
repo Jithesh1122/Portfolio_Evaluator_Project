@@ -21,37 +21,39 @@ function ScoreCard({ scores = {} }) {
 
   return (
     <section className="panel">
-      <div style={{ display: 'flex', flexWrap: 'wrap', gap: '24px', alignItems: 'flex-start' }}>
-        <div style={{ position: 'relative', width: '140px', height: '140px', display: 'grid', placeItems: 'center' }}>
-          <svg width="140" height="140" viewBox="0 0 140 140">
-            <circle
-              cx="70"
-              cy="70"
-              r={circleRadius}
-              fill="none"
-              stroke="#dbeafe"
-              strokeWidth="12"
-            />
-            <circle
-              cx="70"
-              cy="70"
-              r={circleRadius}
-              fill="none"
-              stroke="#2563eb"
-              strokeWidth="12"
-              strokeLinecap="round"
-              strokeDasharray={circumference}
-              strokeDashoffset={strokeDashoffset}
-              transform="rotate(-90 70 70)"
-            />
-          </svg>
-          <div style={{ position: 'absolute', textAlign: 'center', color: 'var(--text)' }}>
-            <p style={{ margin: 0, fontSize: '0.85rem', color: '#64748b' }}>Overall</p>
-            <h3 style={{ margin: '6px 0 2px', fontSize: '2rem' }}>{overallScore}</h3>
-            <p style={{ margin: 0, fontSize: '0.9rem', color: 'var(--accent-deep)' }}>{overallLevel}</p>
+      <div className="score-summary">
+        <div className="score-summary__ring-block">
+          <div className="score-summary__ring-shell">
+            <svg width="140" height="140" viewBox="0 0 140 140">
+              <circle
+                cx="70"
+                cy="70"
+                r={circleRadius}
+                fill="none"
+                stroke="#dbeafe"
+                strokeWidth="12"
+              />
+              <circle
+                cx="70"
+                cy="70"
+                r={circleRadius}
+                fill="none"
+                stroke="#2563eb"
+                strokeWidth="12"
+                strokeLinecap="round"
+                strokeDasharray={circumference}
+                strokeDashoffset={strokeDashoffset}
+                transform="rotate(-90 70 70)"
+              />
+            </svg>
+            <div className="score-summary__ring-copy">
+              <p className="score-summary__ring-label">Overall</p>
+              <h3 className="score-summary__ring-score">{overallScore}</h3>
+            </div>
           </div>
+          <p className="score-summary__ring-status">{overallLevel}</p>
         </div>
-        <div style={{ flex: '1 1 260px' }}>
+        <div className="score-summary__content">
           <p className="panel__eyebrow" style={{ marginBottom: '8px' }}>
             Portfolio Score Summary
           </p>

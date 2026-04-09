@@ -30,19 +30,44 @@ function Home() {
               Search any public GitHub profile, unpack a detailed score breakdown, inspect
               charts and repository highlights, then share a polished report in seconds.
             </p>
+            <div className="home-hero__chips" aria-label="Key features">
+              <span className="home-hero__chip">Score breakdowns</span>
+              <span className="home-hero__chip">Radar + heat map</span>
+              <span className="home-hero__chip">Shareable reports</span>
+            </div>
             <SearchBar />
           </div>
           <div className="home-hero__visual" aria-hidden="true">
-            <div className="home-hero__pattern home-hero__pattern--waves" />
+            <div className="home-hero__pattern home-hero__pattern--mesh" />
             <div className="home-hero__pattern home-hero__pattern--dots" />
-            <div className="home-hero__orb home-hero__orb--large" />
-            <div className="home-hero__orb home-hero__orb--small" />
-            <div className="home-hero__stripe home-hero__stripe--one" />
-            <div className="home-hero__stripe home-hero__stripe--two" />
-            <div className="home-hero__badge">
-              <span className="home-hero__badge-line" />
-              <span className="home-hero__badge-line" />
-              <span className="home-hero__badge-line" />
+            <div className="home-hero__visual-frame">
+              <div className="home-hero__window-bar">
+                <span className="home-hero__window-dot" />
+                <span className="home-hero__window-dot" />
+                <span className="home-hero__window-dot" />
+              </div>
+              <div className="home-hero__mascot-scene">
+                <div className="home-hero__git-bubble home-hero__git-bubble--top-left">
+                  <span>git commit</span>
+                </div>
+                <div className="home-hero__git-bubble home-hero__git-bubble--top-right">
+                  <span>git push</span>
+                </div>
+                <div className="home-hero__git-bubble home-hero__git-bubble--bottom-left">
+                  <span>git pull</span>
+                </div>
+                <div className="home-hero__mascot">
+                  <div className="home-hero__mascot-ear home-hero__mascot-ear--left" />
+                  <div className="home-hero__mascot-ear home-hero__mascot-ear--right" />
+                  <div className="home-hero__mascot-head">
+                    <span className="home-hero__mascot-eye home-hero__mascot-eye--left" />
+                    <span className="home-hero__mascot-eye home-hero__mascot-eye--right" />
+                    <span className="home-hero__mascot-nose" />
+                    <span className="home-hero__mascot-blush home-hero__mascot-blush--left" />
+                    <span className="home-hero__mascot-blush home-hero__mascot-blush--right" />
+                  </div>
+                </div>
+              </div>
             </div>
           </div>
           <div className="feature-strip">

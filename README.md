@@ -71,16 +71,32 @@ npm run dev
 - Root directory: `client`
 - Build command: `npm run vercel-build`
 - Output directory: `dist`
-- Environment variable: `VITE_API_URL`
+- Install command: `npm install`
+- Environment variable: `VITE_API_URL=https://your-server-name.onrender.com/api`
+- Project settings:
+  - Framework preset: `Vite`
+  - Node version: `18+`
+  - The included `client/vercel.json` handles SPA rewrites for routes like `/report/:username` and `/compare`
 
 ### Backend on Render
 
 - Root directory: `server`
 - Build command: `npm run render-build`
 - Start command: `npm run render-start`
+- Runtime: `Node`
+- Node version: `18+`
 - Environment variables:
   - `MONGODB_URI`
   - `GITHUB_TOKEN`
   - `PORT`
   - `CLIENT_URL`
   - `NODE_ENV=production`
+
+### Production Notes
+
+- Set `CLIENT_URL` on Render to your deployed Vercel frontend URL.
+- `CLIENT_URL` can be a comma-separated list if you want to allow multiple origins.
+  Example:
+  `https://your-client-domain.vercel.app,https://your-preview-domain.vercel.app`
+- Set `VITE_API_URL` on Vercel to your Render backend URL with `/api` at the end.
+- In development, the server still allows `http://localhost:5173` automatically.
