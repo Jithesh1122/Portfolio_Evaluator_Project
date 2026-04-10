@@ -36,6 +36,10 @@ app.use(
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
+app.get('/', (_req, res) => {
+  res.json({ message: 'Portfolio Evaluator API is running' });
+});
+
 app.use('/api/health', healthRoutes);
 app.use('/api', profileRoutes);
 
